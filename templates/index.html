@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Lista de Pacientes{% endblock %}
+{% block content %} <!-- Aquí se define el contenido específico de la página -->
+<!-- Enlace a la vista de nuevo paciente -->
+<a href="{{url_for('nuevo_paciente')}}" class="btn btn-primary mb-3">Nuevo paciente</a>
+
+<!-- Formulario para realizar la busqueda con filtro -->
+ <form action="{{ url_for('index')}}" method="get" class="mb-3 d-flex">
+    <input type="text" name="filtro" class="form-control me-2" placeholder="Buscar por nombre o diagnóstico"  value = "{{filtro}}">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+ </form>    
+
+    
+<!-- Tabla lista de pacientes -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Diagnóstico</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Iterar sobre la lista de pacientes y crear una fila por cada uno -->
+        {% if pacientes %}
+        {% for paciente in pacientes %}
+        <tr>
+            <td>{{ paciente[0] }}</td>
+            <td>{{ paciente[1] }}</td>
+            <td>{{ paciente[2] }}</td>
+            <td>{{ paciente[3] }}</td>
+            <td><a href="{{ url_for('editar_paciente', id=paciente[0]) }}" class="m-3">Editar</a>&nbsp;|&nbsp;
+                <form action="{{ url_for('eliminar_paciente', id=paciente[0]) }}" method="post" style="display:inline;"
+                    onsubmit="return confirm('¿Estás seguro de que deseas eliminar este paciente?');">
+
+                    <button type="submit" class="btn btn-link">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+        {% else %}
+        <tr>
+            <td colspan="3">No hay pacientes disponibles.</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<br><br>
+<!-- Paginación de la tabla de pacientes -->
+
+    
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <!-- Botón anterior, sólo visible si estamos en un página mayor a la primera -->
+         {% if pagina > 1 %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('index', pagina=pagina -1, filtro=filtro) }}">Anterior</a></li>
+        </li>
+        {% endif %}
+        <!-- Botones de paginación uno por página -->
+        {% for p in range(1, total_paginas + 1) %}
+        <li class="page-item {% if p == pagina %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('index', pagina=p, filtro=filtro) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <!-- Botón siguiente, sólo visible si estamos en una página menor a la última -->
+        {% if pagina < total_paginas %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('index', pagina=pagina+1, filtro=filtro) }}">Siguiente</a>
+        </li>
+        {% endif %}
+
+    
+        
+    </ul>
+</nav>
+
+
+<!-- Aquí termina el bloque de contenido específico de la página -->
+{% endblock %}
