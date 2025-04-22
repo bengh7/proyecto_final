@@ -148,7 +148,7 @@ def agregar_usuario(usuario, contraseña):
         conn.close()
 
 # Función para autenticar un usuario
-def autenticar_usuario(usuario, contraseña):
+def verificar_usuario(usuario, contraseña):
     conn = sqlite3.connect('data.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM Usuarios WHERE usuario = ?', (usuario,))
