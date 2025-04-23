@@ -1,7 +1,11 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash
-
+import sqlite3
 import db
 import secrets
+import csv
+from flask import Response
+import pandas as pd
+
 
 """ import logging
 
@@ -169,7 +173,73 @@ def requerir_login():
         return redirect(url_for('login'))
     
     
-#
+
+@app.route('/exportar_csv', methods=['GET'])
+def exportar_csv():
+    #conectamos a la base de datos
+    conn = sqlite3.connect('data.db')
+    #creamos un cursor para ejecutar comandos SQL
+    cursor = conn.cursor()
+    #ejecutamos el comando SQL para obtener todos los pacientes
+    cursor.execute('SELECT nombre, edad, diagnostico FROM Pacientes')
+
+    #obtenemos todos los resultados
+    filas = cursor.fetchall()
+    #obtenemos los nombres de las columnas
+    
+    conn.close()
+
+
+
+    def generar_csv():
+
+        yield 'Nombre,Edad,Diagnostico\n'  # Encabezados del CSV
+
+        for fila in filas:
+            yield f'{fila[0]},{fila[1]},{fila[2]}\n'  # Datos de cada paciente
+            #para cada linea, generamos una línea CSV con los datos del paciente
+
+    
+    return Response(generar_csv(), mimetype='text/csv',
+            headers = {'Content-Disposition': 'attachment; filename=pacientes.csv'})
+
+    #Response crea una respuesta http con el contenisdo generado por la funcion generar_csv()
+    #'mimetype' especifica el tipo de contenido como csv
+    #'headers' especifica el nombre del archivo que se descargará
+    #la funcion 'generar_csv()' genera el contendido del archivo CSV linea por linea lo que es eficiente para grandes conjuntos de datos
+
+
+# Exportar excell
+@app.route('/exportar_excel')
+def exportar_excel():
+    #conectamos a la base de datos
+    conn = sqlite3.connect('data.db')
+
+    #pd.read lee los datos de la tabla 'Pacientes' y los almacena en un DataFrame de pandas
+    #esto permite manipular y exportar los datos fácilmente
+    df = pd.read_sql_query('SELECT nombre, edad, diagnostico FROM Pacientes', conn)
+    conn.close()
+    
+    #creamos un objeto de respuesta Excel
+    output = pd.ExcelWriter('pacientes.xlsx', engine='openpyxl')
+    df.to_excel(output, index=False, sheet_name='Pacientes')
+
+    output.close()
+
+    #abrimos el archivo Excel en modo lectura binaria('rb') para enviarlo como respuesta
+    with open('pacientes.xlsx', 'rb') as f:
+       data = f.read()
+
+    #Refresar una respuesta HTTP con el archivo Excel
+    return Response(data,
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    headers={'Content-Disposition': 'attachment; filename=pacientes.xlsx'})
+
+    # Response crea una respuesta HTTP con el contenido del archivo Excel
+    # mimetype especifica el tipo de contenido como Excel    
+    # headers especifica el nombre del archivo que se descargará
+       
+
 
 
 app.run(host= '0.0.0.0', port=5000, debug=True)
