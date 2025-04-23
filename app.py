@@ -149,6 +149,9 @@ def registro():
 # Ruta de cerrar sesión 
 @app.route('/logout')
 def logout():
+
+    #Eliminamos el nombre de usuario de la sesión
+    session.pop('usuario', None)
     # Limpiamos la sesión del usuario
     flash('Sesión cerrada exitosamente.')
     # Redirigimos al usuario a la página de inicio
@@ -166,7 +169,7 @@ def requerir_login():
         return redirect(url_for('login'))
     
     
-
+#
 
 
 app.run(host= '0.0.0.0', port=5000, debug=True)

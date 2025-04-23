@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Lista de Pacientes{% endblock %}
 {% block content %} <!-- Aquí se define el contenido específico de la página -->
+
+<div class="d-flex justify-content-end align-items-center mb-3">
+    
+{% if session.get('usuario') %}
+<!-- Si el usuario ha iniciado sesión, mostrar su nombre -->
+<span class="me-3">Bienvenido, {{session['usuario']}}</span>
+<a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a>
+
+
+{% endif %}
+</div>
+
 <!-- Enlace a la vista de nuevo paciente -->
 <a href="{{url_for('nuevo_paciente')}}" class="btn btn-primary mb-3">Nuevo paciente</a>
 

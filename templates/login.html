@@ -3,6 +3,14 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %} <!-- Aquí se define el contenido específico de la página-->
+
+
+<div class="d-flex justify-content-end align-items-center mb-3">
+<!-- Si el usuario no ha iniciado sesión, mostrar un mensaje de error -->
+<!-- <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm me-2">Iniciar sesión</a>-->
+<a href="{{ url_for('registro') }}" class="btn btn-outline-success btn-sm">Registrarse</a> 
+</div>
+
 <h2>Inciar sesión</h2>
 
 <form method="post">
@@ -13,6 +21,6 @@
 
 </form>
 
-<a href = "{{ url_for('registro') }}">Registrarse</a>
+<!-- <a href = "{{ url_for('registro') }}">Registrarse</a> -->
 
 {% endblock %}
