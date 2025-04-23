@@ -129,8 +129,8 @@ def eliminar_paciente(id):
     # Cerramos la conexión a la base de datos
     conn.close()
     
-#Función para agregar un nuevo usuario
-def agregar_usuario(usuario, contraseña):
+# Función para registrar un nuevo usuario
+def registrar_usuario(usuario, contraseña):
     conn = sqlite3.connect('data.db')
     cursor = conn.cursor()
     hashed_contraseña = generate_password_hash(contraseña)  # Hasheamos la contraseña
@@ -151,7 +151,7 @@ def agregar_usuario(usuario, contraseña):
 def verificar_usuario(usuario, contraseña):
     conn = sqlite3.connect('data.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM Usuarios WHERE usuario = ?', (usuario,))
+    cursor.execute('SELECT contraseña FROM Usuarios WHERE usuario = ?', (usuario,))
     row = cursor.fetchone()
     conn.close()
 

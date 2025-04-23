@@ -108,10 +108,10 @@ def eliminar_paciente(id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     #Verificamos si el método de la solicitud es POST
-    if request.method == 'Post':
+    if request.method == 'POST':
         # comprobamos si el usuario y la contraseña son correctos usando la función
         # verificar_usuario de db.py
-        if db.verificar_usuario(request.form['usuario'], request.form['cotraseña']):
+        if db.verificar_usuario(request.form['usuario'], request.form['contraseña']):
             # Si son correctas, almacenamos el nombre de usuario en la sesión
             session['usuario'] = request.form['usuario']
 
@@ -155,7 +155,16 @@ def logout():
     return redirect(url_for('index'))
 
 
+# Se usa para que antes de cualquier requierimiento se ejecute "requerir_login()"
+@app.before_request
+def requerir_login():
+    #esta función se asegura de que los usuarios que intenten acceder a ciertas rutas
+    #estén autenticados
+    rutas_libres = ['login', 'registro', 'static']
 
+    if request.endpoint not in rutas_libres and 'usuario' not in session: 
+        return redirect(url_for('login'))
+    
     
 
 
