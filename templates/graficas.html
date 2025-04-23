@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Gráficas{% endblock %}
+{% block content %}
+
+<!--contenedor para los gráficos-->
+<div class="row">
+    <!--Gráfico de diagnóstico-->
+    <div class="col-md-6">
+        <canvas id="graficoDiagnosticos"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="graficoEdades"></canvas>
+
+    </div>
+</div>
+
+<!-- Cargar el char.js desde un CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    //gráfico de diagnósticos
+    const ctxDiagnosticos = document.getElementById('graficoDiagnosticos');
+
+    // Se crea el gráfico de barras
+    new Chart(ctxDiagnosticos, {
+        type: 'bar',
+        data: {
+            labels: {{ etiquetas| safe }},
+            datasets: [{
+                label: 'Pacientes por diagnóstico',
+                data: {{ conteos | safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+      
+    });
+
+    //gráfico de edades
+    const ctxEdades = document.getElementById('graficoEdades');
+
+    // Se crea el gráfico de lineas
+    new Chart(ctxEdades, {
+        type: 'line',
+        data: {
+            labels: [ ...Array({{ edades| length }}).keys()],
+            datasets: [{
+                label: 'Pacientes por edad',
+                data: {{ conteosEdades | safe }},
+                
+                borderColor: 'rgba(75, 192, 192, 1)',
+                fill: false,
+                tension: 0.3
+            }]
+        },
+        
+    });
+
+</script>
+    
+    {% endblock %}

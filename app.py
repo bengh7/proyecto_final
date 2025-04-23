@@ -240,6 +240,37 @@ def exportar_excel():
     # headers especifica el nombre del archivo que se descargará
        
 
+#Funcion para generar las graficas de los pacientes
+@app.route('/graficas')
+def graficas():
+    #consultamos a la base de datos
+    conn = sqlite3.connect('data.db')
+
+    #creamos un cursor para ejecutar comandos SQL
+    cursor = conn.cursor()
+    #ejecutamos el comando SQL para obtener todos los pacientes
+    cursor.execute('SELECT diagnostico , COUNT FROM Pacientes GROUP BY diagnostico')
+    #obtenemos todos los resultados
+    resultados = cursor.fetchall()
+
+
+    # consulta para obtener distribución de edades de los pacientes
+    cursor.execute('SELECT edad FROM Pacientes')
+    filas = cursor.fetchall()
+    edades = []
+    for fila in filas:
+        edades.append(fila[0])
+    # cerramos la conexión a la base de datos
+    conn.close()
+
+    # Preparamos los datos para las gráficas
+    etiquetas = [fila[0] for fila in resultados]
+    conteos = [fila[1] for fila in resultados] # número de pacientes por diagnóstico
+
+    return render_template('graficas.html', 
+                           etiquetas=etiquetas, 
+                           conteos=conteos, 
+                           edades=edades)
 
 
 app.run(host= '0.0.0.0', port=5000, debug=True)
