@@ -5,7 +5,7 @@ import secrets
 import csv
 from flask import Response
 import pandas as pd
-
+import json
 
 """ import logging
 
@@ -249,17 +249,18 @@ def graficas():
     #creamos un cursor para ejecutar comandos SQL
     cursor = conn.cursor()
     #ejecutamos el comando SQL para obtener todos los pacientes
-    cursor.execute('SELECT diagnostico , COUNT FROM Pacientes GROUP BY diagnostico')
+    cursor.execute('SELECT diagnostico , COUNT(*) FROM Pacientes GROUP BY diagnostico')
     #obtenemos todos los resultados
     resultados = cursor.fetchall()
 
 
     # consulta para obtener distribución de edades de los pacientes
     cursor.execute('SELECT edad FROM Pacientes')
-    filas = cursor.fetchall()
+    """filas = cursor.fetchall()
     edades = []
     for fila in filas:
-        edades.append(fila[0])
+        edades.append(fila[0])"""
+    edades = [fila[0] for fila in cursor.fetchall()] #Esto es lo mismo que comentado arriba, pero más compacto
     # cerramos la conexión a la base de datos
     conn.close()
 
@@ -268,9 +269,9 @@ def graficas():
     conteos = [fila[1] for fila in resultados] # número de pacientes por diagnóstico
 
     return render_template('graficas.html', 
-                           etiquetas=etiquetas, 
-                           conteos=conteos, 
-                           edades=edades)
+                           etiquetas=json.dumps(etiquetas), 
+                           conteos=json.dumps(conteos), 
+                           edades=json.dumps(edades))
 
 
 app.run(host= '0.0.0.0', port=5000, debug=True)
